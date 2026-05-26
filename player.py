@@ -3,12 +3,11 @@ import pygame
 import Settings
 
 class Player:
-    def __init__(self, rect: pygame.Rect, angle, screen, grid):
+    def __init__(self, rect: pygame.Rect, angle, grid):
         self.grid = grid
         self.x = rect.x + rect.width / 2
         self.y = rect.y + rect.height / 2
         self.angle = math.radians(angle)
-        self.screen = screen
         
         self.forward_speed = 2.0
         self.strafe_speed = 1.0
@@ -26,18 +25,10 @@ class Player:
         mouse_rel = pygame.mouse.get_rel()[0]
 
         # Rotate player based on mouse movement
-        self.angle += mouse_rel * 0.003
+        self.angle += mouse_rel * 0.001
 
         # Get direction once
         direction_x, direction_y = self.get_current_direction()
-
-        # Draw player
-        pygame.draw.circle(
-            self.screen,
-            (255, 0, 0),
-            (int(self.x * Settings.MINIMAP_SCALE_FACTOR), int(self.y * Settings.MINIMAP_SCALE_FACTOR)),
-            int(self.radius * Settings.MINIMAP_SCALE_FACTOR)
-        )
 
         keys = pygame.key.get_pressed()
         
