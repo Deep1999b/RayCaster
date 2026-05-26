@@ -19,7 +19,5 @@ class Grid:
             return self.grid[grid_y][grid_x]
         return 1
 
-
-
     def set_map(self, tiles):
         self.grid =  tiles

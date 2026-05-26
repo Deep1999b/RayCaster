@@ -11,6 +11,12 @@ import Settings
 
 class Game:
     def __init__(self):
+        self.render = None
+        self.raycaster = None
+        self.player = None
+        self.minimap = None
+        self.map = None
+        self.grid = None
         pygame.init()
 
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
