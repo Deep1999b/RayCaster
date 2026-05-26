@@ -92,7 +92,7 @@ class Render:
             if ray.was_hit_vertical:
                 texture_buffer = texture_buffer
             else:
-                texture_buffer = (texture_buffer >> 1) & 0x7F7F7F
+                texture_buffer = self.textures.get_dark_texture(max(0, ray.hit_texture - 1))
 
             # Extract colors and assign to the 2D view (broadcasts across x_start:x_end)
             colors = texture_buffer[texture_offset_Y * Settings.TEXTURE_WIDTH + texture_offset_x]

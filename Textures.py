@@ -36,10 +36,30 @@ class Textures:
     
     
     def __load_all_textures(self):
+
         for file_name in self.__texture_file_names:
-            image = pygame.image.load(f"{self.__image_path}/{file_name}").convert_alpha()
+
+            image = pygame.image.load(
+                f"{self.__image_path}/{file_name}"
+            ).convert_alpha()
+
             texture = pygame.surfarray.pixels2d(image).copy().T
-            self.__textures.append(texture.flatten())
+
+            # Flatten once
+            texture = texture.flatten()
+
+            # Precompute dark texture ONCE
+            dark_texture = ((texture >> 1) & 0x7F7F7F)
+
+            self.__textures.append({
+                "normal": texture,
+                "dark": dark_texture
+            })
     
-    def get_texture(self, texture_type : int):
-        return self.__textures[texture_type]
+    def get_texture(self, texture_type: int):
+
+        return self.__textures[texture_type]["normal"]
+
+    def get_dark_texture(self, texture_type: int):
+
+        return self.__textures[texture_type]["dark"]
