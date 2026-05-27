@@ -17,7 +17,6 @@ class RayCaster:
         col = 0
 
         for ray_count in range(Settings.NUM_RAYS):
-
             ray = Ray(ray_angle)
 
             ray.cast(ray_count, self.player)

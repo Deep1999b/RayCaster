@@ -16,32 +16,21 @@ class Render:
 
         self.game_buffer = numpy.zeros(Settings.RENDER_WIDTH * Settings.RENDER_HEIGHT, dtype=numpy.uint32)
         self.game_frame_2d = self.game_buffer.reshape((Settings.RENDER_WIDTH, Settings.RENDER_HEIGHT))
-
-        self.minimap_buffer = numpy.zeros(
-            (
-                Settings.MINI_MAP_WIDTH *
-                Settings.MINI_MAP_HEIGHT
-            ),
-            dtype=numpy.uint32
-        )
-        self.minimap_frame_2d = self.minimap_buffer.reshape((
-                                                                Settings.MINI_MAP_WIDTH,
-                                                                Settings.MINI_MAP_HEIGHT
-                                                            ))
-
         self.textures = Textures()
-        self.surface = pygame.Surface((Settings.RENDER_WIDTH, Settings.RENDER_HEIGHT)        )
-        self.minimap_surface = pygame.Surface(
-            (
-                    Settings.MINI_MAP_WIDTH,
-                    Settings.MINI_MAP_HEIGHT
-            )
-        )
+        self.surface = pygame.Surface((Settings.RENDER_WIDTH, Settings.RENDER_HEIGHT))
 
 
     def render(self):
         self.render_3d_projected_walls()
         self.render_minimap()
+
+    def present_framebuffer(self):
+        pygame.surfarray.blit_array(
+            self.surface,
+            self.game_frame_2d
+        )
+
+        self.screen.blit(self.surface, (0, 0))
 
     def render_3d_projected_walls(self):
         # Fast background fill: Ceiling and Floor
@@ -98,18 +87,8 @@ class Render:
             colors = texture_buffer[texture_offset_Y * Settings.TEXTURE_WIDTH + texture_offset_x]
             self.game_frame_2d[x_start:x_end, wall_top:wall_bottom] = colors
 
-        pygame.surfarray.blit_array(
-            self.surface,
-            self.game_frame_2d
-        )
-
-        self.screen.blit(self.surface, (0, 0))
-
     def render_minimap(self):
         scale = max(1, math.ceil(Settings.TILE_SIZE * Settings.MINIMAP_SCALE_FACTOR))
-
-        # Clear minimap first
-        self.minimap_frame_2d[:, :] = 0xFF222222
 
         for y, row in enumerate(self.grid.grid):
             for x, cell in enumerate(row):
@@ -127,7 +106,7 @@ class Render:
                 y_end = y_start + scale
 
                 # Fill the block using NumPy slicing
-                self.minimap_frame_2d[
+                self.game_frame_2d[
                     x_start:x_end,
                     y_start:y_end
                 ] = color
@@ -135,14 +114,7 @@ class Render:
         player_x = int((self.player.x / Settings.TILE_SIZE) * Settings.MINIMAP_TILE_SIZE)
         player_y = int((self.player.y / Settings.TILE_SIZE) * Settings.MINIMAP_TILE_SIZE)
 
-        self.minimap_frame_2d[
+        self.game_frame_2d[
             player_x - 2:player_x + 2,
             player_y - 2:player_y + 2
         ] = 0xFFFF0000
-
-        pygame.surfarray.blit_array(
-            self.minimap_surface,
-            self.minimap_frame_2d
-        )
-
-        self.screen.blit(self.minimap_surface, (0, 0))

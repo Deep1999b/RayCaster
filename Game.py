@@ -68,7 +68,11 @@ class Game:
             self.player
         )
 
-        self.sprite = Sprite(500, 500, 5)
+        self.sprite = Sprite(
+            400,
+            400,
+            12
+        )
 
     def handle_events(self):
 
@@ -97,7 +101,9 @@ class Game:
         self.render.render()
 
         for obj in Renderable.renderables:
-            obj.render(self.render_surface, self.player, self.render.textures)
+            obj.render(self.render, self.player, self.render.textures)
+
+        self.render.present_framebuffer()
 
         # Render FPS
         self.render_fps()
