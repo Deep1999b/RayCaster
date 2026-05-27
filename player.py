@@ -1,4 +1,6 @@
 import math
+from operator import pos
+
 import pygame
 import Settings
 
@@ -68,15 +70,26 @@ class Player:
 
     def get_current_direction(self):
         return (
-            math.cos(self.angle),
-            math.sin(self.angle)
+            math.cos(self.get_normalized_angle()),
+            math.sin(self.get_normalized_angle())
         )
 
     def move(self, dx, dy):
         # Independent axis collision allows "sliding" along walls instead of stopping completely
-        if not self.grid.get_Cell_Type(self.x + dx, self.y):
+        if not self.grid.get_cell_type(self.x + dx, self.y):
             self.x += dx
+            pos_x = self.x
             
-        if not self.grid.get_Cell_Type(self.x, self.y + dy):
-            self.y += dy 
+        if not self.grid.get_cell_type(self.x, self.y + dy):
+            self.y += dy
+            pos_y = self.y
 
+    def get_normalized_angle(self):
+        normalized_angle = self.angle
+
+        if normalized_angle > math.pi:
+            normalized_angle -= math.pi * 2
+        if normalized_angle < -math.pi:
+            normalized_angle += math.pi * 2
+
+        return normalized_angle

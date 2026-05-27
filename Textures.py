@@ -1,13 +1,5 @@
 import pygame
 
-class Sprite:
-    def __init__(self, x, y, textureID):
-        self.x = x
-        self.y = y
-        self.texture = textureID
-        self.angle = 0
-        self.distance_from_player = 0
-
 class Textures:
                                 
     def __init__(self):
@@ -49,13 +41,14 @@ class Textures:
             texture = texture.flatten()
 
             # Precompute dark texture ONCE
-            dark_texture = ((texture >> 1) & 0x7F7F7F)
+            dark_texture = ((texture & 0xFEFEFE) >> 1) + 0x070707
 
             self.__textures.append({
                 "normal": texture,
                 "dark": dark_texture
             })
-    
+
+
     def get_texture(self, texture_type: int):
 
         return self.__textures[texture_type]["normal"]

@@ -1,9 +1,10 @@
 import pygame
 
 from Render import Render
+from Sprite import *
 from player import Player
 from RayCaster import RayCaster
-from Map import Map
+from Map import *
 from MiniMap import MiniMap
 from Grid import Grid
 import Settings
@@ -13,6 +14,7 @@ class Game:
 
     def __init__(self):
 
+        self.sprite = None
         pygame.init()
 
         pygame.display.set_caption("Ray-Caster")
@@ -37,7 +39,6 @@ class Game:
         self.render = None
         self.raycaster = None
         self.player = None
-        self.map = None
         self.grid = None
 
         self.initialize_world()
@@ -53,9 +54,7 @@ class Game:
 
         self.grid = Grid(world_rect, Settings.TILE_SIZE)
 
-        self.map = Map(world_rect)
-
-        self.grid.set_map(self.map.get_map())
+        self.grid.set_map(get_map())
 
         self.player = Player(world_rect, 0, self.grid)
 
@@ -68,6 +67,8 @@ class Game:
             self.raycaster.rays,
             self.player
         )
+
+        self.sprite = Sprite(500, 500, 5)
 
     def handle_events(self):
 
@@ -94,6 +95,9 @@ class Game:
 
         # Render world
         self.render.render()
+
+        for obj in Renderable.renderables:
+            obj.render(self.render_surface, self.player, self.render.textures)
 
         # Render FPS
         self.render_fps()

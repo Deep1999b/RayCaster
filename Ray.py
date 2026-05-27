@@ -57,8 +57,8 @@ class Ray:
         while (next_horizontal_touch_x >= min_x and next_horizontal_touch_x <= max_x and
                next_horizontal_touch_y >= min_y and next_horizontal_touch_y <= max_y):
             
-            cell_type = player.grid.get_Cell_Type(next_horizontal_touch_x, next_horizontal_touch_y - (1 if self.is_ray_facing_up else 0))
-            if (cell_type):
+            cell_type = player.grid.get_cell_type(next_horizontal_touch_x, next_horizontal_touch_y - (1 if self.is_ray_facing_up else 0))
+            if cell_type:
                 found_horizontal_wall_hit = True
                 horizontal_wall_hit_x = next_horizontal_touch_x
                 horizontal_wall_hit_y = next_horizontal_touch_y
@@ -93,7 +93,7 @@ class Ray:
         while (next_vertical_touch_x >= min_x and next_vertical_touch_x <= max_x and
                next_vertical_touch_y >= min_y and next_vertical_touch_y <= max_y):
             
-            cell_type = player.grid.get_Cell_Type(next_vertical_touch_x - (1 if self.is_ray_facing_left else 0), next_vertical_touch_y)
+            cell_type = player.grid.get_cell_type(next_vertical_touch_x - (1 if self.is_ray_facing_left else 0), next_vertical_touch_y)
             if (cell_type):
                 found_vertical_wall_hit = True
                 vertical_wall_hit_x = next_vertical_touch_x
@@ -119,10 +119,10 @@ class Ray:
             self.wall_hit_distance = horizontal_distance_between_player_and_wall
             self.was_hit_vertical = False
             self.hit_texture = horizontal_hit_texture
-            
+
     def render(self, player):
         pygame.draw.line(player.screen, "red", (player.x, player.y), (self.wall_hit_x, self.wall_hit_y), 1)
-    
+
     def normalize_angle(self, angle):
         angle = angle % (2 * math.pi)
         if angle < 0:

@@ -11,7 +11,7 @@ class Grid:
             for _ in range(transform_rect.height // self.cell_size)
         ]
     
-    def get_Cell_Type(self, x, y):
+    def get_cell_type(self, x, y):
         grid_x = int(x // self.cell_size)
         grid_y = int(y // self.cell_size)
 
