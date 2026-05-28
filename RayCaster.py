@@ -2,11 +2,11 @@ from Ray import Ray
 from Render import *
 
 class RayCaster:
+    rays = []
 
     def __init__(self, player):
 
         self.player = player
-        self.rays = []
 
     def cast_all_rays(self):
 
@@ -21,7 +21,7 @@ class RayCaster:
 
             ray.cast(ray_count, self.player)
 
-            self.rays.append(ray)
+            RayCaster.rays.append(ray)
 
             col += 1
             ray_angle = self.player.angle + math.atan((col - Settings.NUM_RAYS / 2) / Settings.DISTANCE_TO_PROJECTION_PLANE)

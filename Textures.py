@@ -44,11 +44,11 @@ class Textures:
             # Flatten once
             texture = texture.flatten()
             magenta_mask = (
-                (rgb[:, :, 0] == self.MAGENTA_RGB[0])
-                & (rgb[:, :, 1] == self.MAGENTA_RGB[1])
-                & (rgb[:, :, 2] == self.MAGENTA_RGB[2])
+                    (rgb[:, :, 0] > 220)
+                    & (rgb[:, :, 1] < 40)
+                    & (rgb[:, :, 2] > 220)
             )
-            visible_mask = ((alpha > 0) & (~magenta_mask)).flatten()
+            visible_mask = (alpha > 0) & (~magenta_mask)
 
             # Precompute dark texture ONCE
             dark_texture = ((texture & 0xFEFEFE) >> 1) + 0x070707

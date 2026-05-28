@@ -27,7 +27,7 @@ class Player:
         mouse_rel = pygame.mouse.get_rel()[0]
 
         # Rotate player based on mouse movement
-        self.angle += mouse_rel * 0.001
+        self.angle += mouse_rel * 0.0005
 
         # Get direction once
         direction_x, direction_y = self.get_current_direction()

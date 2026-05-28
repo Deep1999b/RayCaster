@@ -1,9 +1,6 @@
 import math
-
+from RayCaster import *
 import numpy
-
-import player
-from Textures import *
 import Settings
 from Renderable import Renderable
 
@@ -44,16 +41,16 @@ class Sprite(Renderable):
         distance = math.sqrt(dx * dx + dy * dy)
         self.distance_from_player = distance
 
-        if distance <= 0.01:
+        if distance < 0.0001:
             return
 
         # Angle between player and sprite.
         sprite_angle = math.atan2(dy, dx) - player.angle
 
-        while sprite_angle > math.pi:
+        if sprite_angle > math.pi:
             sprite_angle -= math.pi * 2
 
-        while sprite_angle < -math.pi:
+        if sprite_angle < -math.pi:
             sprite_angle += math.pi * 2
 
         # Outside FOV
@@ -63,27 +60,17 @@ class Sprite(Renderable):
         # Use the depth along the camera direction for stable projection.
         depth = distance * math.cos(sprite_angle)
 
-        if depth <= 0.01:
+        if depth <= 0.0001:
             return
 
         # Projected sprite size.
-        sprite_size = int(
-            (Settings.TEXTURE_HEIGHT * Settings.DISTANCE_TO_PROJECTION_PLANE)
-            / depth
-        )
+        sprite_size = int((32 * Settings.DISTANCE_TO_PROJECTION_PLANE) / depth)
 
         if sprite_size <= 0:
             return
 
         # Match the current wall projection, which advances angles per ray column.
-        screen_x = int(
-            (Settings.RENDER_WIDTH / 2)
-            + (
-                math.tan(sprite_angle)
-                * Settings.DISTANCE_TO_PROJECTION_PLANE
-                * Settings.WALL_WIDTH
-            )
-        )
+        screen_x = int((Settings.RENDER_WIDTH / 2) + (math.tan(sprite_angle) * Settings.DISTANCE_TO_PROJECTION_PLANE * Settings.WALL_WIDTH))
 
         # Sprite bounds.
         left = screen_x - (sprite_size // 2)
@@ -138,26 +125,28 @@ class Sprite(Renderable):
             Settings.TEXTURE_HEIGHT - 1
         )
 
-        column_start = 0
+        for screen_x in range(draw_width):
 
-        while column_start < draw_width:
-            texture_x = tex_x[column_start]
-            column_end = column_start + 1
+            ray_index = (draw_left + screen_x) // Settings.WALL_WIDTH
 
-            while column_end < draw_width and tex_x[column_end] == texture_x:
-                column_end += 1
+            if ray_index < 0 or ray_index >= len(RayCaster.rays):
+                continue
+
+            texture_x = tex_x[screen_x]
 
             texture_column = self._texture_2d[tex_y, texture_x]
             opaque_mask = self._texture_alpha[tex_y, texture_x]
 
-            if numpy.any(opaque_mask):
-                framebuffer_slice = render.game_frame_2d[
-                    draw_left + column_start:draw_left + column_end,
+            if (
+                    numpy.any(opaque_mask)
+                    and distance < RayCaster.rays[ray_index].wall_hit_distance
+            ):
+                framebuffer_column = render.game_frame_2d[
+                    draw_left + screen_x,
                     draw_top:draw_bottom
                 ]
-                framebuffer_slice[:, opaque_mask] = texture_column[opaque_mask]
 
-            column_start = column_end
+                framebuffer_column[opaque_mask] = texture_column[opaque_mask]
 
     def calculate_distance_between_sprite_and_player(self, player):
         distance_from_player = math.sqrt((self.x - player.x) ** 2 + (self.y - player.y) ** 2)

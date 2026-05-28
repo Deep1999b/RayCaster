@@ -14,6 +14,7 @@ class Game:
 
     def __init__(self):
 
+        self.armour = None
         self.sprite = None
         pygame.init()
 
@@ -74,6 +75,12 @@ class Game:
             12
         )
 
+        self.armour = Sprite(
+            500,
+            602,
+            1
+        )
+
     def handle_events(self):
 
         for event in pygame.event.get():
@@ -99,6 +106,11 @@ class Game:
 
         # Render world
         self.render.render()
+
+        for i in range(len(Renderable.renderables) - 1):
+            for j in range(i + 1, len(Renderable.renderables)):
+                if Renderable.renderables[i].distance_from_player < Renderable.renderables[j].distance_from_player:
+                    Renderable.renderables[i], Renderable.renderables[j] = Renderable.renderables[j], Renderable.renderables[i]
 
         for obj in Renderable.renderables:
             obj.render(self.render, self.player, self.render.textures)
